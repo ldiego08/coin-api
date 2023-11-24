@@ -3,11 +3,12 @@ import { z } from 'zod';
 
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
+import { Interval } from '@nestjs/schedule';
 
 import { DbClient } from '../db';
 import { getCurrentUtcDate } from '../utils';
 
-import { SUPPORTED_ASSETS } from './consts';
+import { ASSET_SYNC_FREQUENCY, SUPPORTED_ASSETS } from './consts';
 
 const CoingeckoCoinMarketsResponse = z
   .object({
@@ -43,7 +44,7 @@ export class AssetTasks {
    * **NOTE:** This is a scheduled task running with the frequency defined
    * by `ASSET_SYNC_FREQUENCY`.
    */
-  // @Interval(ASSET_SYNC_FREQUENCY)
+  @Interval(ASSET_SYNC_FREQUENCY)
   public async syncAssets() {
     if (this.isSyncingAssets) {
       return;

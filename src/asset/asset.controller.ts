@@ -11,7 +11,7 @@ import {
 
 import { DbClient } from '../db';
 
-import { SUPPORTED_ASSETS } from './consts';
+import { SUPPORTED_ASSETS_SYMBOLS } from './consts';
 
 export class AssetGetQuery {
   @IsDateString()
@@ -45,13 +45,13 @@ export class AssetController {
    */
   @Get()
   public async get(
-    @Param('id') id: string,
+    @Param('symbol') symbol: string,
     @Query() { limit = 15, offset = 0, ...params }: AssetGetQuery,
   ) {
-    if (!SUPPORTED_ASSETS.includes(id)) {
+    if (!SUPPORTED_ASSETS_SYMBOLS.includes(symbol)) {
       throw new BadRequestException(
-        `Asset ${id} is not supported. ` +
-          `Available assets are: ${SUPPORTED_ASSETS.join(', ')}`,
+        `Asset ${symbol} is not supported. ` +
+          `Available assets are: ${SUPPORTED_ASSETS_SYMBOLS.join(', ')}`,
       );
     }
 
@@ -63,7 +63,7 @@ export class AssetController {
 
     const asset = await this.db.assetMarket.findMany({
       where: {
-        id,
+        symbol,
         date: {
           gte: from,
           lte: to,
