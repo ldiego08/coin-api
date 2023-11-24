@@ -7,9 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Asset {
-  id           String @id
+model AssetMarket {
+  id           String
   symbol       String
+  date         DateTime
   priceUsd     Float
   marketCapUsd Float
+
+  @@id([id, date])
 }
