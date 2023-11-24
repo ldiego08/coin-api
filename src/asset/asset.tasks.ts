@@ -3,11 +3,11 @@ import { z } from 'zod';
 
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { Interval } from '@nestjs/schedule';
 
 import { DbClient } from '../db';
+import { getCurrentUtcDate } from '../utils';
 
-import { ASSET_SYNC_FREQUENCY, SUPPORTED_ASSETS } from './consts';
+import { SUPPORTED_ASSETS } from './consts';
 
 const CoingeckoCoinMarketsResponse = z
   .object({
@@ -43,7 +43,7 @@ export class AssetTasks {
    * **NOTE:** This is a scheduled task running with the frequency defined
    * by `ASSET_SYNC_FREQUENCY`.
    */
-  @Interval(ASSET_SYNC_FREQUENCY)
+  // @Interval(ASSET_SYNC_FREQUENCY)
   public async syncAssets() {
     if (this.isSyncingAssets) {
       return;
@@ -51,7 +51,7 @@ export class AssetTasks {
 
     this.isSyncingAssets = true;
 
-    const date = this.getCurrentUtcDate();
+    const date = getCurrentUtcDate();
     const assets = await this.getAssetsFromApi();
 
     const assetUpdates = assets.map(({ id, symbol, priceUsd, marketCapUsd }) =>
@@ -94,13 +94,5 @@ export class AssetTasks {
     const coins = CoingeckoCoinMarketsResponse.parse(response.data);
 
     return coins;
-  }
-
-  private getCurrentUtcDate() {
-    const now = new Date();
-
-    return new Date(
-      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-    );
   }
 }
