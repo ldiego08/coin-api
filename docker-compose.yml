@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      target: development
+    ports:
+      - 8080:8080
+      - 9230:9230
+    env_file: .env
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - db
+    command:
+      - /bin/sh
+      - -c
+      - |
+        npm run start:debug
+    volumes:
+      - .:/var/www/server
+      - /var/www/server/node_modules
+  db:
+    image: postgres:10.4
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: db
