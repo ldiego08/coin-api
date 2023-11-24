@@ -1,12 +1,14 @@
 import { IsDateString, IsNumber, IsOptional } from 'class-validator';
 import { getCurrentUtcDate, getUtcDate } from 'src/utils';
 
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import {
   BadRequestException,
   Controller,
   Get,
   Param,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { DbClient } from '../db';
@@ -34,7 +36,8 @@ export class AssetGetQuery {
 /**
  * Provides endpoints to query assets.
  */
-@Controller('asset/:id')
+@Controller('asset/:symbol')
+@UseInterceptors(CacheInterceptor)
 export class AssetController {
   constructor(private readonly db: DbClient) {}
 
